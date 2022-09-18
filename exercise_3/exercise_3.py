@@ -1,5 +1,6 @@
+from pydoc import text
 from tkinter import *
-from math import sqrt
+from math import sqrt, pi, log1p, tanh, pow
 
 
 class Calculator:
@@ -8,6 +9,7 @@ class Calculator:
         self.text_history = ""
         self.text_show = "0"
         self.usual_mod = True
+        self.small = True
         self.prev = ""
         self.cells = {
             'm_1': 0,
@@ -82,6 +84,7 @@ def clicked_M_C(m_slot: int):
 
 def clicked_clear_all():
     clicked_clear_text()
+    text.delete(1.0, END)
     for key in calc.cells:
         calc.cells[key] = 0
 
@@ -112,8 +115,7 @@ def clicked_plus():
         calc.prev = calc.text_show
         calc.text_cur = "0"
         calc.text_history = f'{calc.text_show} + '
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
+        lbl_hist.configure(text=calc.text_history)
     else:
         tmp = round(float(calc.text_cur) + float(calc.prev), 3)
         if tmp % 1 == 0.0:
@@ -123,9 +125,8 @@ def clicked_plus():
         calc.prev = calc.text_show
         calc.text_history = f'{calc.text_show} + '
         calc.text_cur = "0"
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
-            lbl_cur.configure(text=calc.text_show)
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_minus():
@@ -148,9 +149,8 @@ def clicked_minus():
         calc.prev = calc.text_show
         calc.text_history = f'{calc.text_show} - '
         calc.text_cur = "0"
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
-            lbl_cur.configure(text=calc.text_show)
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_miltiply():
@@ -173,9 +173,8 @@ def clicked_miltiply():
         calc.prev = calc.text_show
         calc.text_history = f'{calc.text_show} * '
         calc.text_cur = "0"
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
-            lbl_cur.configure(text=calc.text_show)
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_div():
@@ -198,9 +197,8 @@ def clicked_div():
         calc.prev = calc.text_show
         calc.text_history = f'{calc.text_show} / '
         calc.text_cur = "0"
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
-            lbl_cur.configure(text=calc.text_show)
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_mod():
@@ -222,9 +220,8 @@ def clicked_mod():
         calc.prev = calc.text_show
         calc.text_history = f'{calc.text_show} % '
         calc.text_cur = "0"
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
-            lbl_cur.configure(text=calc.text_show)
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_pow():
@@ -235,9 +232,8 @@ def clicked_pow():
     else:
         calc.text_show = str(tmp)
     calc.text_cur = calc.text_show
-    if calc.usual_mod:
-        lbl_hist.configure(text=calc.text_history)
-        lbl_cur.configure(text=calc.text_show)
+    lbl_hist.configure(text=calc.text_history)
+    lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_sqrt():
@@ -248,9 +244,8 @@ def clicked_sqrt():
     else:
         calc.text_show = str(tmp)
     calc.text_cur = calc.text_show
-    if calc.usual_mod:
-        lbl_hist.configure(text=calc.text_history)
-        lbl_cur.configure(text=calc.text_show)
+    lbl_hist.configure(text=calc.text_history)
+    lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_equal():
@@ -266,12 +261,13 @@ def clicked_equal():
             clicked_div()
         if calc.operation == "%":
             clicked_mod()
+        if calc.operation == "**":
+            clicked_x_pow_y()
         calc.text_history += f'{tmp}'
         calc.text_cur = tmp
         calc.prev = calc.text_show
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
-            lbl_cur.configure(text=calc.text_show)
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
     else:
         pass
 
@@ -288,6 +284,179 @@ def clicked_M_min(m_slot: int):
     calc.prev = calc.text_show
     calc.text_cur = calc.cells[m_slot]
     clicked_minus()
+
+
+def clicked_extra():
+    if calc.small:
+        window.geometry('680x500')
+        calc.small = False
+    else:
+        window.geometry('322x500')
+        calc.small = True
+
+
+def clicked_pi():
+    calc.text_cur = str(pi)
+    calc.text_show = str(pi)
+    lbl_cur.configure(text=calc.text_show)
+
+
+def clicked_ten_pow_x():
+    calc.text_history += f'10 pow {calc.text_show}'
+    tmp = round(10 ** float(calc.text_show), 3)
+    if tmp % 1 == 0.0:
+        calc.text_show = str(int(tmp))
+    else:
+        calc.text_show = str(tmp)
+    calc.text_cur = calc.text_show
+    lbl_hist.configure(text=calc.text_history)
+    lbl_cur.configure(text=calc.text_show)
+
+
+def clicked_x_pow_y():
+    if calc.operation == "**" and calc.text_cur == "0":
+        calc.text_show = calc.prev
+        pass
+    elif calc.operation != "**":
+        calc.operation = "**"
+        calc.prev = calc.text_show
+        calc.text_cur = "0"
+        calc.text_history = f'{calc.text_show} ** '
+        lbl_hist.configure(text=calc.text_history)
+    else:
+        tmp = round(pow(float(calc.prev), float(calc.text_cur)), 3)
+        if tmp % 1 == 0.0:
+            calc.text_show = str(int(tmp))
+        else:
+            calc.text_show = str(tmp)
+        calc.prev = calc.text_show
+        calc.text_history = f'{calc.text_show} ** '
+        calc.text_cur = "0"
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=calc.text_show)
+
+
+def clicked_Ln():
+    calc.text_history += f'Ln{calc.text_show}'
+    tmp = round(log1p(float(calc.text_show)), 3)
+    if tmp % 1 == 0.0:
+        calc.text_show = str(int(tmp))
+    else:
+        calc.text_show = str(tmp)
+    calc.text_cur = calc.text_show
+    lbl_hist.configure(text=calc.text_history)
+    lbl_cur.configure(text=calc.text_show)
+
+
+def clicked_tanh():
+    calc.text_history += f'tanh{calc.text_show}'
+    tmp = round(tanh(float(calc.text_show)), 3)
+    if tmp % 1 == 0.0:
+        calc.text_show = str(int(tmp))
+    else:
+        calc.text_show = str(tmp)
+    calc.text_cur = calc.text_show
+    lbl_hist.configure(text=calc.text_history)
+    lbl_cur.configure(text=calc.text_show)
+
+
+def clicked_display_result():
+    s = str(text.get(1.0, END))
+    text_el = s.split('\n')
+    for i in range(0, len(text_el)):
+        text_el[i] += f' {i}'
+    delta = 1.1
+    calc.operation = None
+    calc.prev = 0
+    arr_operations = ["+", "-", "/", "%", "**", "^", "*"]
+    # TODO num of string and string update
+    arr_one_el_operations = ["Ln", "tanh", "sqrt", "sqr"]
+    for el in text_el:
+        tmp = el.split(' ')
+        if len(tmp) == 4:
+            if tmp[0] == "pi":
+                tmp[0] = pi
+            elif tmp[3] == "pi":
+                tmp[3] = pi
+            if tmp[1] == "+":
+                calc.prev = round(float(tmp[0]) + float(tmp[2]), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            elif tmp[1] == "-":
+                calc.prev = round(float(tmp[0]) - float(tmp[2]), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            elif tmp[1] == "/":
+                calc.prev = round(float(tmp[0]) / float(tmp[2]), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            elif tmp[1] == "%":
+                calc.prev = round(float(tmp[0]) % float(tmp[2]), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            elif tmp[1] == "**":
+                calc.prev = round(pow(float(tmp[0]), float(tmp[2])), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            elif tmp[1] == "^":
+                calc.prev = round(pow(float(tmp[0]), float(tmp[2])), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            elif tmp[1] == "*":
+                calc.prev = round(float(tmp[0]) * float(tmp[2]), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+
+        elif len(tmp) == 3:
+            if tmp[1] == "pi":
+                tmp[1] = pi
+            if tmp[0] == "sqrt":
+                calc.prev = round(sqrt(float(tmp[1])), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            if tmp[0] == "Ln":
+                calc.prev = round(log1p(float(tmp[1])), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            if tmp[0] == "tanh":
+                calc.prev = round(tanh(float(tmp[1])), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+            if tmp[0] == "sqr":
+                calc.prev = round(pow(float(tmp[1]), 2), 3)
+                if calc.prev % 1 == 0.0:
+                    calc.prev = str(int(calc.prev))
+                else:
+                    calc.prev = str(calc.prev)
+
+        elif tmp[0] == "=":
+            calc.prev = '\n' + calc.prev + '\n'
+            text.insert(int(tmp[1]) + delta, calc.prev)
+            calc.prev = "0"
+            calc.text_show = "0"
+            calc.text_cur = "0"
+            delta += 2.0
+            pass
 
 
 calc = Calculator()
@@ -364,7 +533,7 @@ btn_div = Button(window, text="÷", width=10, height=3,
                  background="#2F4F4F", foreground="white", font=("Arial", 9), command=clicked_div)
 btn_div.place(x=242, y=211)
 btn_extra = Button(window, text="extra", width=10, height=3,
-                   background="#2F4F4F", foreground="white", font=("Arial", 9))
+                   background="#2F4F4F", foreground="white", font=("Arial", 9), command=clicked_extra)
 btn_extra.place(x=0, y=153)
 btn_ce = Button(window, text="CE", width=10, height=3,
                 background="#2F4F4F", foreground="white", font=("Arial", 9), command=clicked_clear_text)
@@ -390,17 +559,102 @@ btn_M0_min.place(x=210, y=124)
 btn_M0_C = Button(window, text="MC", width=7, height=1,
                   background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_C(0))
 btn_M0_C.place(x=270, y=124)
+text = Text(window, width=43, height=16, bg="#2F4F4F",
+            foreground="white", borderwidth=3, relief="solid")
+text.place(x=325, y=8)
+btn_M1_S = Button(window, text="MS", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_S(1))
+btn_M1_S.place(x=325, y=269)
+btn_M1_R = Button(window, text="MR", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_R(1))
+btn_M1_R.place(x=406, y=269)
+btn_M1_plus = Button(window, text="M+", width=7, height=1,
+                     background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_plus(1))
+btn_M1_plus.place(x=487, y=269)
+btn_M1_min = Button(window, text="M-", width=7, height=1,
+                    background="black", foreground="white", font=("Arial", 8), relief=FLAT,  command=lambda: clicked_M_min(1))
+btn_M1_min.place(x=560, y=269)
+btn_M1_C = Button(window, text="MC", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_C(1))
+btn_M1_C.place(x=640, y=269)
+btn_M2_S = Button(window, text="MS", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_S(2))
+btn_M2_S.place(x=325, y=308)
+btn_M2_R = Button(window, text="MR", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_R(2))
+btn_M2_R.place(x=406, y=308)
+btn_M2_plus = Button(window, text="M+", width=7, height=1,
+                     background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_plus(2))
+btn_M2_plus.place(x=487, y=308)
+btn_M2_min = Button(window, text="M-", width=7, height=1,
+                    background="black", foreground="white", font=("Arial", 8), relief=FLAT,  command=lambda: clicked_M_min(2))
+btn_M2_min.place(x=560, y=308)
+btn_M2_C = Button(window, text="MC", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_C(2))
+btn_M2_C.place(x=640, y=308)
+btn_M3_S = Button(window, text="MS", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_S(3))
+btn_M3_S.place(x=325, y=347)
+btn_M3_R = Button(window, text="MR", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_R(3))
+btn_M3_R.place(x=406, y=347)
+btn_M3_plus = Button(window, text="M+", width=7, height=1,
+                     background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_plus(3))
+btn_M3_plus.place(x=487, y=347)
+btn_M3_min = Button(window, text="M-", width=7, height=1,
+                    background="black", foreground="white", font=("Arial", 8), relief=FLAT,  command=lambda: clicked_M_min(3))
+btn_M3_min.place(x=560, y=347)
+btn_M3_C = Button(window, text="MC", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_C(3))
+btn_M3_C.place(x=640, y=347)
+btn_M4_S = Button(window, text="MS", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_S(4))
+btn_M4_S.place(x=325, y=386)
+btn_M4_R = Button(window, text="MR", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_R(4))
+btn_M4_R.place(x=406, y=386)
+btn_M4_plus = Button(window, text="M+", width=7, height=1,
+                     background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_plus(4))
+btn_M4_plus.place(x=487, y=386)
+btn_M4_min = Button(window, text="M-", width=7, height=1,
+                    background="black", foreground="white", font=("Arial", 8), relief=FLAT,  command=lambda: clicked_M_min(4))
+btn_M4_min.place(x=560, y=386)
+btn_M4_C = Button(window, text="MC", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_C(4))
+btn_M4_C.place(x=640, y=386)
+btn_M5_S = Button(window, text="MS", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_S(5))
+btn_M5_S.place(x=325, y=425)
+btn_M5_R = Button(window, text="MR", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_R(5))
+btn_M5_R.place(x=406, y=425)
+btn_M5_plus = Button(window, text="M+", width=7, height=1,
+                     background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_plus(5))
+btn_M5_plus.place(x=487, y=425)
+btn_M5_min = Button(window, text="M-", width=7, height=1,
+                    background="black", foreground="white", font=("Arial", 8), relief=FLAT,  command=lambda: clicked_M_min(5))
+btn_M5_min.place(x=560, y=425)
+btn_M5_C = Button(window, text="MC", width=7, height=1,
+                  background="black", foreground="white", font=("Arial", 8), relief=FLAT, command=lambda: clicked_M_C(5))
+btn_M5_C.place(x=640, y=425)
+btn_Pi = Button(window, text="π", width=7, height=2,
+                background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_pi)
+btn_Pi.place(x=325, y=460)
+btn_ten_pow_x = Button(window, text="10^x", width=7, height=2,
+                       background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_ten_pow_x)
+btn_ten_pow_x.place(x=381, y=460)
+btn_x_pow_y = Button(window, text="x^y", width=7, height=2,
+                     background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_x_pow_y)
+btn_x_pow_y.place(x=437, y=460)
+btn_Ln = Button(window, text="Ln", width=7, height=2,
+                background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_Ln)
+btn_Ln.place(x=493, y=460)
+btn_tanh = Button(window, text="tanh", width=7, height=2,
+                  background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_tanh)
+btn_tanh.place(x=549, y=460)
+btn_display_result = Button(window, text="result display", width=10, height=2,
+                            background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_display_result)
+btn_display_result.place(x=605, y=460)
 
 
 window.mainloop()
-
-"""
-# diff y = 58
-memory - 6
-Dms, 10^x,
-Pi, tanh, Ln
--------
-переводит из десятичного вида в формат в
-градусы, минуты, секунды; возведение десяти
-в произвольную степень, число Пи, гиперболический тангенс, натуральный логирифм
-"""
