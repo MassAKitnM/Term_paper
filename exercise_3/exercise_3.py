@@ -154,10 +154,7 @@ def clicked_minus():
 
 
 def clicked_miltiply():
-    if calc.operation == "*" and calc.text_cur == "0":
-        calc.text_show = calc.prev
-        pass
-    elif calc.operation != "*":
+    if calc.operation != "*":
         calc.operation = "*"
         calc.prev = calc.text_show
         calc.text_cur = "0"
@@ -180,7 +177,7 @@ def clicked_miltiply():
 def clicked_div():
     if calc.operation == "/" and calc.text_cur == "0":
         calc.text_show = calc.prev
-        pass
+        lbl_cur.configure(text="Zero, hmm.. it's not working")
     elif calc.operation != "/":
         calc.operation = "/"
         calc.prev = calc.text_show
@@ -258,7 +255,12 @@ def clicked_equal():
         if calc.operation == "*":
             clicked_miltiply()
         if calc.operation == "/":
-            clicked_div()
+            if calc.text_cur == "0":
+                calc.text_show = calc.prev
+                lbl_cur.configure(text="Zero, hmm.. it's not working")
+                return
+            else:
+                clicked_div()
         if calc.operation == "%":
             clicked_mod()
         if calc.operation == "**":
@@ -391,11 +393,14 @@ def clicked_display_result():
                 else:
                     calc.prev = str(calc.prev)
             elif tmp[1] == "/":
-                calc.prev = round(float(tmp[0]) / float(tmp[2]), 3)
-                if calc.prev % 1 == 0.0:
-                    calc.prev = str(int(calc.prev))
+                if tmp[2] != "0":
+                    calc.prev = round(float(tmp[0]) / float(tmp[2]), 3)
+                    if calc.prev % 1 == 0.0:
+                        calc.prev = str(int(calc.prev))
+                    else:
+                        calc.prev = str(calc.prev)
                 else:
-                    calc.prev = str(calc.prev)
+                    calc.prev = "Zero, hmmmmm.... it's not working"
             elif tmp[1] == "%":
                 calc.prev = round(float(tmp[0]) % float(tmp[2]), 3)
                 if calc.prev % 1 == 0.0:

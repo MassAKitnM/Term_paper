@@ -1,5 +1,3 @@
-
-
 Calculator
 format for operators ["+", "-", "/", "%", "**", "^", "*"]
 (** = ^) is "x operator y"  in one line 
