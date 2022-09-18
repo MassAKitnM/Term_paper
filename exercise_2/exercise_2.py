@@ -62,6 +62,7 @@ if __name__ == "__main__":
     bank.deposit("Sidorchuk", 61899)
 
     window = Tk()
+    window.resizable(False, False)
     window.title("Bank")
     window.geometry('600x600')
     lbl_input = Label(window, text="Input:")
