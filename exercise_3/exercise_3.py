@@ -12,12 +12,12 @@ class Calculator:
         self.small = True
         self.prev = ""
         self.cells = {
-            'm_1': 0,
-            'm_2': 0,
-            'm_3': 0,
-            'm_4': 0,
-            'm_5': 0,
-            'm_6': 0,
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
         }
         self.value = 0
         self.history = ""
@@ -265,9 +265,7 @@ def clicked_equal():
             clicked_mod()
         if calc.operation == "**":
             clicked_x_pow_y()
-        if calc.text_history[-1] == "0" and calc.text_history[-2] == " ":
-            pass
-        else:
+        if calc.text_history[-1:-3:-1] != "0 ":
             calc.text_history += f'{tmp}'
         calc.text_cur = tmp
         calc.prev = calc.text_show
@@ -373,9 +371,6 @@ def clicked_display_result():
     delta = 1.1
     calc.operation = None
     calc.prev = 0
-    arr_operations = ["+", "-", "/", "%", "**", "^", "*"]
-    # TODO num of string and string update
-    arr_one_el_operations = ["Ln", "tanh", "sqrt", "sqr"]
     for el in text_el:
         tmp = el.split(' ')
         if len(tmp) == 4:
