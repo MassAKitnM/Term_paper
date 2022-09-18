@@ -265,7 +265,10 @@ def clicked_equal():
             clicked_mod()
         if calc.operation == "**":
             clicked_x_pow_y()
-        calc.text_history += f'{tmp}'
+        if calc.text_history[-1] == "0" and calc.text_history[-2] == " ":
+            pass
+        else:
+            calc.text_history += f'{tmp}'
         calc.text_cur = tmp
         calc.prev = calc.text_show
         lbl_hist.configure(text=calc.text_history)
