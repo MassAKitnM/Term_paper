@@ -8,7 +8,6 @@ class Calculator:
         self.text_cur = "0"
         self.text_history = ""
         self.text_show = "0"
-        self.usual_mod = True
         self.small = True
         self.prev = ""
         self.cells = {
@@ -34,8 +33,7 @@ def clicked_digit(d: str):
     else:
         calc.text_cur += d
     calc.text_show = calc.text_cur
-    if calc.usual_mod:
-        lbl_cur.configure(text=calc.text_show)
+    lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_negative():
@@ -45,8 +43,7 @@ def clicked_negative():
         else:
             calc.text_show = '-' + calc.text_show
         calc.text_cur = calc.text_show
-        if calc.usual_mod:
-            lbl_cur.configure(text=calc.text_show)
+        lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_clear_text():
@@ -54,17 +51,16 @@ def clicked_clear_text():
     calc.operation = None
     calc.text_history = ""
     calc.text_show = "0"
-    if calc.usual_mod:
-        lbl_cur.configure(text=calc.text_show)
-        lbl_hist.configure(text=calc.text_history)
+    lbl_cur.configure(text=calc.text_show)
+    lbl_hist.configure(text=calc.text_history)
+    text.delete(1.0, END)
 
 
 def clicked_M_S(m_slot: int):
     if calc.text_show[-1] != '.':
         calc.cells[m_slot] = calc.text_show
         calc.text_cur = "0"
-        if calc.usual_mod:
-            lbl_cur.configure(text=calc.text_show)
+        lbl_cur.configure(text=calc.text_show)
     else:
         calc.text_cur = calc.text_show
         clicked_backspace()
@@ -74,8 +70,7 @@ def clicked_M_S(m_slot: int):
 def clicked_M_R(m_slot: int):
     calc.text_show = calc.cells[m_slot]
     calc.text_cur = "0"
-    if calc.usual_mod:
-        lbl_cur.configure(text=calc.text_show)
+    lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_M_C(m_slot: int):
@@ -102,8 +97,7 @@ def clicked_backspace():
         if calc.text_cur[-1] == '.':
             calc.text_cur = calc.text_cur[0: -1]
     calc.text_show = calc.text_cur
-    if calc.usual_mod:
-        lbl_cur.configure(text=calc.text_show)
+    lbl_cur.configure(text=calc.text_show)
 
 
 def clicked_plus():
@@ -138,8 +132,7 @@ def clicked_minus():
         calc.prev = calc.text_show
         calc.text_cur = "0"
         calc.text_history = f'{calc.text_show} - '
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
+        lbl_hist.configure(text=calc.text_history)
     else:
         tmp = round(float(calc.prev) - float(calc.text_cur), 3)
         if tmp % 1 == 0.0:
@@ -159,8 +152,7 @@ def clicked_miltiply():
         calc.prev = calc.text_show
         calc.text_cur = "0"
         calc.text_history = f'{calc.text_show} * '
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
+        lbl_hist.configure(text=calc.text_history)
     else:
         tmp = round(float(calc.prev) * float(calc.text_cur), 3)
         if tmp % 1 == 0.0:
@@ -183,8 +175,7 @@ def clicked_div():
         calc.prev = calc.text_show
         calc.text_cur = "0"
         calc.text_history = f'{calc.text_show} / '
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
+        lbl_hist.configure(text=calc.text_history)
     else:
         tmp = round(float(calc.prev) / float(calc.text_cur), 3)
         if tmp % 1 == 0.0:
@@ -206,8 +197,7 @@ def clicked_mod():
         calc.prev = calc.text_show
         calc.text_cur = "0"
         calc.text_history = f'{calc.text_show} % '
-        if calc.usual_mod:
-            lbl_hist.configure(text=calc.text_history)
+        lbl_hist.configure(text=calc.text_history)
     else:
         tmp = round(float(calc.prev) % float(calc.text_cur), 3)
         if tmp % 1 == 0.0:
@@ -451,6 +441,17 @@ def clicked_display_result():
                     calc.prev = str(int(calc.prev))
                 else:
                     calc.prev = str(calc.prev)
+            if tmp[0] == "DMS":
+                d = float(tmp[1])
+                if d < 0:
+                    calc.prev = "input must be positive"
+                else:
+                    m = d % 1 * 60
+                    s = m % 1 * 60
+                    d = int(d)
+                    s = int(s)
+                    m = int(m)
+                    calc.prev = f'{d}°{m}\'{s}\"'
 
         elif tmp[0] == "=":
             calc.prev = '\n' + calc.prev + '\n'
@@ -460,6 +461,26 @@ def clicked_display_result():
             calc.text_cur = "0"
             delta += 2.0
             pass
+
+
+def clicked_DMS():
+    d = float(calc.text_show)
+    if d < 0:
+        calc.text_history = "input must be positive"
+    else:
+        calc.text_history += f'DMS{calc.text_show}'
+        m = d % 1 * 60
+        s = m % 1 * 60
+        d = int(d)
+        s = int(s)
+        m = int(m)
+        calc.text_cur = f'{d}°{m}\'{s}\"'
+        lbl_hist.configure(text=calc.text_history)
+        lbl_cur.configure(text=f'{d}°{m}\'{s}\"')
+        calc.text_cur = "0"
+        calc.operation = None
+        calc.text_history = ""
+        calc.text_show = "0"
 
 
 calc = Calculator()
@@ -643,21 +664,24 @@ btn_M5_C.place(x=640, y=425)
 btn_Pi = Button(window, text="π", width=7, height=2,
                 background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_pi)
 btn_Pi.place(x=325, y=460)
-btn_ten_pow_x = Button(window, text="10^x", width=7, height=2,
+btn_ten_pow_x = Button(window, text="10^x", width=6, height=2,
                        background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_ten_pow_x)
-btn_ten_pow_x.place(x=381, y=460)
-btn_x_pow_y = Button(window, text="x^y", width=7, height=2,
+btn_ten_pow_x.place(x=380, y=460)
+btn_x_pow_y = Button(window, text="x^y", width=6, height=2,
                      background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_x_pow_y)
-btn_x_pow_y.place(x=437, y=460)
-btn_Ln = Button(window, text="Ln", width=7, height=2,
+btn_x_pow_y.place(x=429, y=460)
+btn_Ln = Button(window, text="Ln", width=6, height=2,
                 background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_Ln)
-btn_Ln.place(x=493, y=460)
-btn_tanh = Button(window, text="tanh", width=7, height=2,
+btn_Ln.place(x=478, y=460)
+btn_tanh = Button(window, text="tanh", width=6, height=2,
                   background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_tanh)
-btn_tanh.place(x=549, y=460)
-btn_display_result = Button(window, text="result display", width=10, height=2,
+btn_tanh.place(x=527, y=460)
+btn_display_DMS = Button(window, text="DMS", width=6, height=2,
+                         background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_DMS)
+btn_display_DMS.place(x=576, y=460)
+btn_display_result = Button(window, text="result", width=7, height=2,
                             background="#2F4F4F", foreground="white", font=("Arial", 8), command=clicked_display_result)
-btn_display_result.place(x=605, y=460)
+btn_display_result.place(x=625, y=460)
 
 
 window.mainloop()
