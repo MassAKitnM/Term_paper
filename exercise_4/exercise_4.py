@@ -1,15 +1,14 @@
 import random
 from collections import defaultdict
-from tkinter import Tk, Entry, Button, Canvas, Text, messagebox, Label
+from tkinter import Tk, Entry, Button, Canvas, messagebox, Label
 from copy import deepcopy
 from enum import Enum
 import time
 
-ANIMATION_TOTAL_MOVES = 5
+ANIMATION_TOTAL_MOVES = 1
 ANIMATION_STAGE_LENGTH = 60
 GOING_UP_Y = 150
 DISK_HEIGHT = 12
-TICKS_PER_SECOND = 0
 DISPLAY_EVERY_N_SEC = 1
 CHECK_TIME_EVERY = 5e5
 
@@ -175,12 +174,12 @@ display_cnt = 0
 last_display_time = 0
 
 
-def UsualHanoi(n: int, start: int, finish: int, sum_rods: int, tower: list, cnt: Cnt, canvas, stop, results):
+def usual_hanoi(n: int, start: int, finish: int, sum_rods: int, tower: list, cnt: Cnt, canvas, stop, results):
     global display_cnt, last_display_time
     if n <= 0:
         return
     tmp = sum_rods - start - finish
-    UsualHanoi(n-1, start, tmp, sum_rods, tower, cnt, canvas, stop, results)
+    usual_hanoi(n-1, start, tmp, sum_rods, tower, cnt, canvas, stop, results)
     cnt.cnt += 1
     tower[finish].append(tower[start][-1])
     tower[start].pop(-1)
@@ -196,22 +195,22 @@ def UsualHanoi(n: int, start: int, finish: int, sum_rods: int, tower: list, cnt:
             results[stopPoint].append(
                 (deepcopy(tower), start, finish, tower[finish][-1]))
 
-    UsualHanoi(n-1, tmp, finish, sum_rods, tower, cnt, canvas, stop, results)
+    usual_hanoi(n-1, tmp, finish, sum_rods, tower, cnt, canvas, stop, results)
 
 
-def StartHanoi(th: list, cnt, canvas, recordIterations):
+def start_hanoi(th: list, cnt, canvas, recordIterations):
     stop = []
     results = None
     if recordIterations:
         stop = tkState.stop
         results = defaultdict(list)
     l = len(th[8])
-    UsualHanoi(l, 8, 7, 21, th, cnt, canvas, stop, results)
+    usual_hanoi(l, 8, 7, 21, th, cnt, canvas, stop, results)
     for i in range(7, 2, -1):
         l = len(th[i])
-        UsualHanoi(l, i, i-1, 3 * i, th, cnt, canvas, stop, results)
+        usual_hanoi(l, i, i-1, 3 * i, th, cnt, canvas, stop, results)
     l = len(th[2])
-    UsualHanoi(l, 2, 1, 6, th, cnt, canvas, stop, results)
+    usual_hanoi(l, 2, 1, 6, th, cnt, canvas, stop, results)
     draw_frame(canvas, th, None)
     return results
 
@@ -243,7 +242,7 @@ def setup_tk():
         for e in entities:
             id += e.get()
         if not id.isnumeric() or len(id) != 8:
-            messagebox.showerror('Sus', 'Specify correct id')
+            messagebox.showerror('Error', 'Specify correct id')
             return
 
         tkState.stop = []
@@ -253,7 +252,7 @@ def setup_tk():
         for e in entities:
             text = e.get()
             if len(text) != 2:
-                messagebox.showerror('Sus', 'Specify correct id block')
+                messagebox.showerror('Error', 'Specify correct id block')
                 return
             tkState.percentage.append(int(text))
 
@@ -263,7 +262,7 @@ def setup_tk():
 
         tkState.tower = CreateTower(id)
         tkState.cnt = Cnt()
-        StartHanoi(deepcopy(tkState.tower), tkState.cnt, canvas, False)
+        start_hanoi(deepcopy(tkState.tower), tkState.cnt, canvas, False)
 
         for p in tkState.percentage:
             isPartial = not (tkState.cnt.cnt / 100 * p).is_integer()
@@ -273,7 +272,7 @@ def setup_tk():
         tkState.stop.append(tkState.cnt.cnt)
         tkState.isPartial.append(False)
 
-        tkState.results = StartHanoi(
+        tkState.results = start_hanoi(
             deepcopy(tkState.tower), Cnt(), canvas, True)
         iteration_count['text'] = str(tkState.cnt.cnt) + ' iterations'
 

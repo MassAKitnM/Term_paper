@@ -1,35 +1,42 @@
-from tkinter import *
 from collections import defaultdict
-from tkinter import scrolledtext
+from tkinter import Tk, Button, scrolledtext, Label
 
-if __name__ == "__main__":
+ID = 70174538
 
-    class Bank:
-        def __init__(self):
-            self.clients = defaultdict(int)
 
-        def deposit(self, name: str, money: int):
-            self.clients[name] += money
+class Bank:
+    def __init__(self):
+        self.clients = defaultdict(int)
 
-        def withdraw(self, name: str, money: int):
-            self.clients[name] -= money
+    def deposit(self, name: str, money: int):
+        self.clients[name] += money
 
-        def balance(self, name: str):
-            if name != "":
-                return self.clients.get(name, "NO CLIENT")
-            return self.clients.items()
+    def withdraw(self, name: str, money: int):
+        self.clients[name] -= money
 
-        def transfer(self, name1: str, name2: str, money: int):
-            self.clients[name1] -= money
-            self.clients[name2] += money
+    def balance(self, name: str):
+        if name != "":
+            return self.clients.get(name, "NO CLIENT")
+        return self.clients.items()
 
-        def income(self, p: int):
-            for name in self.clients:
-                if self.clients[name] > 0:
-                    self.clients[name] = int(self.clients[name] * (1 + p/100))
+    def transfer(self, name1: str, name2: str, money: int):
+        self.clients[name1] -= money
+        self.clients[name2] += money
+
+    def income(self, p: int):
+        for name in self.clients:
+            if self.clients[name] > 0:
+                self.clients[name] = int(self.clients[name] * (1 + p/100))
+
+
+bank = Bank()
+bank.deposit("Sidorchuk", ID)
+
+
+def setup_tk():
 
     def clicked_calculate():
-        s = str(text.get(1.0, END))
+        s = str(text.get(1.0, "end"))
         text_el = s.split('\n')
         lbl_text = ""
         for el in text_el:
@@ -55,29 +62,41 @@ if __name__ == "__main__":
         lbl.configure(text=lbl_text)
 
     def clicked_clear():
-        text.delete(1.0, END)
+        text.delete(1.0, "end")
         lbl.configure(text="need some input")
-
-    bank = Bank()
-    bank.deposit("Sidorchuk", 61899)
 
     window = Tk()
     window.resizable(False, False)
     window.title("Bank")
-    window.geometry('600x600')
+    window.geometry("600x600")
+
     lbl_input = Label(window, text="Input:")
     lbl_input.place(x=120, y=0)
+
     lbl_output = Label(window, text="Output:")
     lbl_output.place(x=433, y=0)
+
     lbl = Label(window, text="need some input",
-                width=39, height=34, bg="#406080", foreground="white", borderwidth=3, relief="solid", anchor=NW, justify="left")
+                width=39, height=34, bg="#406080", foreground="white", borderwidth=3, relief="solid", anchor="nw", justify="left")
     lbl.place(x=310, y=20)
+
     text = scrolledtext.ScrolledText(window, width=34, height=32, bg="#406080",
                                      foreground="white", borderwidth=3, relief="solid")
     text.place(x=10, y=20)
+
     btn_calculate = Button(window, text="Calculate",
                            command=clicked_calculate)
     btn_calculate.place(x=310, y=560)
+
     btn_clear = Button(window, text="reset text", command=clicked_clear)
     btn_clear.place(x=450, y=560)
+
     window.mainloop()
+
+
+def main():
+    setup_tk()
+
+
+if __name__ == "__main__":
+    main()

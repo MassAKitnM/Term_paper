@@ -1,5 +1,6 @@
 from pydoc import text
 from tkinter import *
+from tkinter import messagebox
 from math import sqrt, pi, log1p, tanh, pow
 
 
@@ -167,9 +168,11 @@ def clicked_miltiply():
 
 
 def clicked_div():
-    if calc.operation == "/" and calc.text_cur == "0":
+    if calc.operation == '/' and calc.text_cur == '0':
+        messagebox.showerror("Error", "Specify correct integer")
         calc.text_show = calc.prev
         lbl_cur.configure(text="Zero, hmm.. it's not working")
+
     elif calc.operation != "/":
         calc.operation = "/"
         calc.prev = calc.text_show
@@ -248,6 +251,8 @@ def clicked_equal():
             if calc.text_cur == "0":
                 calc.text_show = calc.prev
                 lbl_cur.configure(text="Zero, hmm.. it's not working")
+                messagebox.showerror("Error", "Specify correct integer")
+
                 return
             else:
                 clicked_div()
@@ -389,6 +394,7 @@ def clicked_display_result():
                         calc.prev = str(calc.prev)
                 else:
                     calc.prev = "Zero, hmmmmm.... it's not working"
+
             elif tmp[1] == "%":
                 calc.prev = round(float(tmp[0]) % float(tmp[2]), 3)
                 if calc.prev % 1 == 0.0:
